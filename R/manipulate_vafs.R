@@ -35,7 +35,7 @@ identify_most_common_mutations = function(sample_meta_path, variant_meta_path, a
 #' @param return_genotypes a logical value. If TRUE, returns 0 or 1 values. If FALSE, returns VAFs.
 #' @return a tibble where the first column is the sample identifier, and all remaining columns are the variant mutations or VAFs
 #' @export
-subset_vaf_matrix_by_id = function(sample_meta_path, variant_meta_path, variant_id, return_genotypes = FALSE, normalize_columns = FALSE) {
+subset_vaf_matrix_by_id = function(sample_meta_path, variant_meta_path, variant_id, return_genotypes = FALSE, normalize_columns = FALSE, return_sparse_matrix = FALSE) {
 
     stopifnot(!missing(variant_id) & !missing(sample_meta_path) & !missing(variant_meta_path))
     stopifnot(is.character(variant_id))
@@ -68,18 +68,27 @@ subset_vaf_matrix_by_id = function(sample_meta_path, variant_meta_path, variant_
 
     vaf_mat = vaf_mat[, variant_meta$col_index]
 
+
     if(normalize_columns) {
         col_sums = Matrix::colSums(vaf_mat)
         vaf_mat = vaf_mat %*% Matrix::diag(1 / col_sums)
         stopifnot(all(abs(Matrix::colSums(vaf_mat) - 1) < 1e-4))
     }
 
-    vaf_ped = tibble::as_tibble(as.matrix(vaf_mat)) %>%
-                setNames(variant_meta$variant_label)
+    if(return_sparse_matrix) {
+        return(vaf_mat)
+    } else {
 
-    sample_meta %>%
-        dplyr::bind_cols(vaf_ped) %>%
-        dplyr::select(-row_index)
+        vaf_ped = tibble::as_tibble(as.matrix(vaf_mat)) %>%
+                    setNames(variant_meta$variant_label)
+
+        ped = sample_meta %>%
+            dplyr::bind_cols(vaf_ped) %>%
+            dplyr::select(-row_index)
+
+        return(ped)
+    }
+
 }
 
 #' @title Compute mutation burden per sample
