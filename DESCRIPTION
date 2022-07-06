@@ -1,15 +1,14 @@
 Package: somaticWas
-Title: What the Package Does (One Line, Title Case)
-Version: 0.0.0.9000
+Title: Analyze Somatic Variation 
+Version: 0.1.0
 Authors@R: 
-    person(given = "First",
-           family = "Last",
+    person(given = "Josh",
+           family = "Weinstock",
            role = c("aut", "cre"),
-           email = "first.last@example.com",
-           comment = c(ORCID = "YOUR-ORCID-ID"))
-Description: What the package does (one paragraph).
-License: `use_mit_license()`, `use_gpl3_license()` or friends to
-    pick a license
+           email = "jweinstk@umich.edu",
+           comment = c(ORCID = "0000-0001-7013-1899"))
+Description: This package supports analyzing recurrent somatic variation for a TOPMed manuscript. 
+License: GPL (>= 3)
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
