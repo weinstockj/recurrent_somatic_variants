@@ -51,6 +51,11 @@ read_in_vaf = function(vaf_path) {
     futile.logger::flog.info(glue::glue("vaf matrix has {n_samples} samples and {n_variants} variants"))
 }
 
+recode_vaf_by_threshold = function(threshold = .26) {
+    # remove variants with VAF values above threshold
+    py_cmd = glue::glue("vaf_table.tocsv(); vaf_table[vaf_table > {threshold}] = 0.0; vaf_table.eliminate_zeros();vaf_mat = snp.as_coo(vaf_mat)")
+}
+
 #'
 #' @example \dontrun{
 #' high_level_helper(sample_ped_path = "../prepare_ped_files/blood_phenotypes_2020_11_25.ped", outcome_column= "hemoglobin_mcnc_bld", covariate_columns = "AgeAtBloodDraw,INFERRED_SEX,STUDY,PC1,PC2,PC3,PC4,PC5,PC6,PC7,PC8,PC9,PC10,sPC1,sPC2,sPC3,sPC4,sPC5,sPC6,sPC7,sPC8,sPC9,sPC10,VB_DEPTH,FREEMIX", output_prefix = "hemoglobin_mcnc_bld", n_workers = 200)
@@ -211,6 +216,7 @@ main_assoc = function(
     futile.logger::flog.appender(appender, name = "logger")
 
     read_in_vaf(vaf_path)
+    recode_vaf_by_threshold()
 
     variant_meta = vroom::vroom(variant_meta_path) %>%
         tibble::rowid_to_column(var = "col_index") %>%
