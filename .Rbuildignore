@@ -4,3 +4,4 @@
 output/
 batchtools.slurm.tmpl
 core
+^LICENSE\.md$
