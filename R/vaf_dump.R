@@ -53,7 +53,7 @@ read_in_vaf = function(vaf_path) {
 
 recode_vaf_by_threshold = function(threshold = .26) {
     # remove variants with VAF values above threshold
-    py_cmd = glue::glue("vaf_table.tocsv(); vaf_table[vaf_table > {threshold}] = 0.0; vaf_table.eliminate_zeros();vaf_mat = snp.as_coo(vaf_mat)")
+    py_cmd = glue::glue("vaf_table.tocsc(); vaf_table[vaf_table > {threshold}] = 0.0; vaf_table.eliminate_zeros();vaf_mat = snp.as_coo(vaf_mat)")
 }
 
 #'
