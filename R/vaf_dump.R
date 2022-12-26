@@ -56,7 +56,7 @@ recode_vaf_by_threshold = function(threshold = .26) {
     py_cmd = glue::glue("vaf_table.tocsc(); vaf_table[vaf_table > {threshold}] = 0.0; vaf_table.eliminate_zeros();vaf_mat = snp.as_coo(vaf_mat)")
 }
 
-#'
+#' @export
 #' @example \dontrun{
 #' high_level_helper(sample_ped_path = "../prepare_ped_files/blood_phenotypes_2020_11_25.ped", outcome_column= "hemoglobin_mcnc_bld", covariate_columns = "AgeAtBloodDraw,INFERRED_SEX,STUDY,PC1,PC2,PC3,PC4,PC5,PC6,PC7,PC8,PC9,PC10,sPC1,sPC2,sPC3,sPC4,sPC5,sPC6,sPC7,sPC8,sPC9,sPC10,VB_DEPTH,FREEMIX", output_prefix = "hemoglobin_mcnc_bld", n_workers = 200)
 #' }
@@ -98,7 +98,8 @@ high_level_helper = function(
     futile.logger::flog.info(glue::glue("now running {nrow(chunks)} separate chunks using {n_workers} workers (cores or size of slurm job array)"))
 
     if(run_locally) {
-        future::plan(future::sequential)
+        # future::plan(future::sequential)
+        future::plan(future::multiprocess, workers = n_workers)
     } else {
         future::plan(
             future.batchtools::batchtools_slurm, 
@@ -107,7 +108,13 @@ high_level_helper = function(
                 partition = "topmed", array_throttle = n_workers, ncpus = 2, memory = 5000, walltime = 1200 * 60, omp.threads = 1, blas.threads = 1)
         )
     }
-    # future::plan(future::multiprocess, workers = n_workers)
+
+    print("debugging info")
+    mi <- list(rver = getRversion(), libs = .libPaths())
+    print(mi)
+
+    wi %<-% list(rver = getRversion(), libs = .libPaths())
+    print(wi)
 
     results = future.apply::future_lapply(
     # results = lapply(
@@ -131,7 +138,8 @@ high_level_helper = function(
                 end = chunk_row[["end"]]
             )
             result
-        }
+        },
+        future.packages = "somaticWas"
     )
 
     future::plan(future::sequential)
