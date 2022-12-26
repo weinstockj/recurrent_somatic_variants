@@ -2,9 +2,11 @@
 
 export("%>%")
 export(compute_mutation_counts_per_sample)
+export(high_level_helper)
 export(subset_vaf_matrix_by_id)
 importFrom(futile.logger,appender.file)
 importFrom(futile.logger,flog.info)
+importFrom(future,`%<-%`)
 importFrom(ggplot2,aes)
 importFrom(ggplot2,element_blank)
 importFrom(ggplot2,element_line)
